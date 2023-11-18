@@ -1,0 +1,51 @@
+# A Docker Compose must always start with the version tag.
+# We use '3' because it's the last version.
+version: '3'
+
+services:
+  mongodb1:
+    image: 'mongo:4.1'
+    container_name: mongodb
+
+    # The syntax is [port we want on our machine]:[port we want to retrieve in the container]
+    ports:
+      - 27017:27017
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root 
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: dev_db
+
+    # The `volumes` tag allows us to share a folder with our container
+    # Its syntax is as follows: [folder path on our machine]:[folder path to retrieve in the container]
+    volumes:
+      # In this example, we share the folder `db-data` in our root repository, with the default PostgreSQL data path
+      # It means that every time the repository is modifying the data inside
+      # of `/var/lib/postgresql/data/`, automatically the change will appear in `db-data`
+      # You don't need to create the `db-data` folder. Docker Compose will do it for you
+      - ./db-data/:/data/db
+      - ./db-log/:/var/log/mongodb
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  mongodb2:
+    image: 'mongo:4.1'
+    container_name: mongodb2
+
+    # The syntax is [port we want on our machine]:[port we want to retrieve in the container]
+    ports:
+      - 27018:27017
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root 
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: dev_db_2
+
+    # The `volumes` tag allows us to share a folder with our container
+    # Its syntax is as follows: [folder path on our machine]:[folder path to retrieve in the container]
+    volumes:
+      # In this example, we share the folder `db-data` in our root repository, with the default PostgreSQL data path
+      # It means that every time the repository is modifying the data inside
+      # of `/var/lib/postgresql/data/`, automatically the change will appear in `db-data`
+      # You don't need to create the `db-data` folder. Docker Compose will do it for you
+      - ./db-data-2/:/data/db
+      - ./db-log-2/:/var/log/mongodb
+      - ./init-mongo-2.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
